@@ -16,7 +16,7 @@ import java.io.File
 
 private const val TAG = "ShareImage"
 private const val MIME_PNG = "image/png"
-private const val ALBUM = "SimpMusic"
+private const val ALBUM = "SimpleMusic"
 
 actual suspend fun saveImageToDevice(
     bytes: ByteArray,

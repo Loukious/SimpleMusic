@@ -1,6 +1,6 @@
 - Thêm hiển thị phụ đề Canvas đồng bộ cho lời bài hát
 - Thêm hiển thị BPM, khóa và thang âm vào bảng thông tin trình phát
-- Thêm hỗ trợ deep link simpmusic:// và simpmusic.org
+- Thêm hỗ trợ deep link simplemusic:// và simpmusic.org
 - Thêm chế độ Crossfade Tự động (giống AutoMix)
 - Thiết kế lại điều khiển tốc độ phát/cao độ với hiệu ứng cải thiện
 - Chuẩn hóa URL chia sẻ sử dụng simpmusic.org

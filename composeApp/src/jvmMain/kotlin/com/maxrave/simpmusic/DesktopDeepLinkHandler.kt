@@ -14,11 +14,11 @@ import java.io.File
  * and the first instance reads it on restore.
  *
  * Supported URI patterns:
- * - simpmusic://open-app?url=<encoded_url>  (redirected from website)
- * - simpmusic://watch?v=VIDEO_ID            (direct scheme)
- * - simpmusic://playlist?list=PLAYLIST_ID   (direct scheme)
- * - simpmusic://channel/CHANNEL_ID          (direct scheme)
- * - simpmusic://album?id=ALBUM_ID           (direct scheme)
+ * - simplemusic://open-app?url=<encoded_url>  (redirected from website)
+ * - simplemusic://watch?v=VIDEO_ID            (direct scheme)
+ * - simplemusic://playlist?list=PLAYLIST_ID   (direct scheme)
+ * - simplemusic://channel/CHANNEL_ID          (direct scheme)
+ * - simplemusic://album?id=ALBUM_ID           (direct scheme)
  * - https://simpmusic.org/app/...            (web URL passed via args)
  */
 object DesktopDeepLinkHandler {
@@ -91,10 +91,10 @@ object DesktopDeepLinkHandler {
      * Converts a raw URI string into a [GenericIntent] that App.kt can process.
      *
      * Conversion rules:
-     * 1. simpmusic://open-app?url=<encoded_url>
+     * 1. simplemusic://open-app?url=<encoded_url>
      *    → Extract the `url` param and use it as intent data
      *
-     * 2. simpmusic://watch?v=xxx, simpmusic://playlist?list=xxx, etc.
+     * 2. simplemusic://watch?v=xxx, simplemusic://playlist?list=xxx, etc.
      *    → Convert to https://simpmusic.org/app/watch?v=xxx format
      *      so App.kt handles it uniformly via the simpmusic.org branch
      *
@@ -105,23 +105,23 @@ object DesktopDeepLinkHandler {
         val parsed = Uri.parse(uri)
 
         val actualUri = when {
-            // simpmusic://open-app?url=<encoded_url>
+            // simplemusic://open-app?url=<encoded_url>
             parsed.scheme == "simpmusic" && parsed.host == "open-app" -> {
                 val urlParam = parsed.getQueryParameter("url")
                 if (urlParam != null) {
                     Logger.d(TAG, "Extracted URL from open-app: $urlParam")
                     Uri.parse(urlParam)
                 } else {
-                    // simpmusic://open-app without params → just open the app, no navigation
+                    // simplemusic://open-app without params → just open the app, no navigation
                     Logger.d(TAG, "open-app without URL param, just opening app")
                     null
                 }
             }
 
-            // simpmusic://watch?v=xxx → https://simpmusic.org/app/watch?v=xxx
-            // simpmusic://playlist?list=xxx → https://simpmusic.org/app/playlist?list=xxx
-            // simpmusic://channel/UCxxx → https://simpmusic.org/app/channel/UCxxx
-            // simpmusic://album?id=xxx → https://simpmusic.org/app/album?id=xxx
+            // simplemusic://watch?v=xxx → https://simpmusic.org/app/watch?v=xxx
+            // simplemusic://playlist?list=xxx → https://simpmusic.org/app/playlist?list=xxx
+            // simplemusic://channel/UCxxx → https://simpmusic.org/app/channel/UCxxx
+            // simplemusic://album?id=xxx → https://simpmusic.org/app/album?id=xxx
             parsed.scheme == "simpmusic" && parsed.host != null -> {
                 val host = parsed.host!!
                 val query = parsed.query?.let { "?$it" } ?: ""
@@ -129,7 +129,7 @@ object DesktopDeepLinkHandler {
                     if (it.isNotEmpty()) "/$it" else ""
                 }
                 val convertedUrl = "https://simpmusic.org/app/$host$pathSuffix$query"
-                Logger.d(TAG, "Converted simpmusic:// to: $convertedUrl")
+                Logger.d(TAG, "Converted simplemusic:// to: $convertedUrl")
                 Uri.parse(convertedUrl)
             }
 

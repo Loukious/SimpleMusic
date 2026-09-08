@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.sign
 
 /**
- * Applies the SimpMusic liquid-glass effect to any element.
+ * Applies the SimpleMusic liquid-glass effect to any element.
  *
  * This is the single primitive behind the glass buttons that used to be hand-wired
  * inline on every screen. It encapsulates the per-surface

@@ -1,0 +1,132 @@
+name: Fork sync — rebuild dev from upstream
+
+# Regenerates this fork's `dev` branch from upstream maxrave-dev/SimpMusic:
+# fresh upstream checkout → deterministic rebrand (ci/transform.py) → fork
+# modifications (ci/forkify.py) → vendor the `core` submodule into the tree →
+# force-push. No rebase, no conflicts: upstream edits to any rebranded line
+# are absorbed automatically because the rebrand is re-applied from scratch
+# every run.
+#
+# When gradle/libs.versions.toml `version-name` differs from the latest fork
+# release tag, the release workflow fires by itself: fork-release.yml
+# triggers on the dev push this workflow makes (the default GITHUB_TOKEN
+# cannot dispatch workflow_dispatch events, so there is no explicit
+# dispatch step — it would 403).
+
+on:
+  schedule:
+    # daily, off the :00 mark
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fork-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Rebuild dev from upstream + rebrand
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout fork dev (carries the ci/ scripts)
+        uses: actions/checkout@v6
+        with:
+          ref: dev
+
+      - name: Clone upstream + core at the pinned SHA
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/maxrave-dev/SimpMusic.git upstream
+          CORE_SHA=$(git -C upstream ls-tree HEAD core | awk '{print $3}')
+          echo "Pinned core SHA: $CORE_SHA"
+          git clone --quiet https://github.com/maxrave-dev/core.git upstream-core
+          git -C upstream-core checkout --quiet "$CORE_SHA"
+          echo "UPSTREAM_SHA=$(git -C upstream rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Rebrand + apply fork modifications
+        # forkify.py edits files under core/, so it must run AFTER core is
+        # vendored into the tree (next step) — transform.py is safe on both
+        # trees independently.
+        run: |
+          set -euo pipefail
+          python ci/transform.py upstream
+          python ci/transform.py upstream-core
+
+      - name: Vendor core into the parent tree
+        # The fork cannot push into maxrave-dev/core, so the submodule is
+        # dissolved: core's files become ordinary files at core/. Gradle only
+        # ever referenced them by directory path (settings.gradle.kts), so the
+        # build is unchanged. The sync regenerates this every run, so the
+        # divergence from upstream's layout never needs reconciling.
+        run: |
+          set -euo pipefail
+          rm -rf upstream/core upstream/.gitmodules
+          mkdir upstream/core
+          cp -a upstream-core/. upstream/core/
+          rm -rf upstream/core/.git
+          python ci/forkify.py upstream
+
+      - name: Replace upstream CI with fork CI
+        # Upstream's workflows would fire on the dev push without upstream's
+        # secrets and waste runners on builds this fork doesn't ship. Only the
+        # fork's own sync + release workflows (and issue templates etc.) stay.
+        run: |
+          set -euo pipefail
+          rm -rf upstream/.github/workflows
+          mkdir -p upstream/.github/workflows
+          cp -r ci upstream/ci
+          cp .github/workflows/fork-sync.yml .github/workflows/fork-release.yml \
+             upstream/.github/workflows/
+
+      - name: Commit and force-push dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd upstream
+          git config user.name "fork-sync-bot"
+          git config user.email "actions@github.com"
+          # The upstream clone's index still records core as a gitlink (160000)
+          # from .gitmodules. `git add -A` does NOT descend into core while
+          # that entry is staged — the vendored files would be silently
+          # replaced by the bare pointer and the release build would fail with
+          # "Configuring project ':data' without an existing directory". Drop
+          # the index entry first, then stage core explicitly.
+          git rm --cached core
+          git add core
+          git add -A
+          git commit -m "chore(fork): rebuild from upstream ${UPSTREAM_SHA:0:10}"
+          git push --force \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            HEAD:dev
+
+      - name: Compare version with the latest release
+        # Informational only: the release build itself is triggered by the
+        # dev push (fork-release.yml runs on push to dev and skips itself
+        # when the tag already exists).
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION=$(grep '^version-name' upstream/gradle/libs.versions.toml | head -1 | cut -d'"' -f2)
+          LATEST_TAG=$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" \
+            --jq .tag_name 2>/dev/null || true)
+          echo "Version: v${VERSION} — latest released tag: ${LATEST_TAG:-none}"
+
+  # Called in the same run, not via a pushed event: a GITHUB_TOKEN push does
+  # not trigger on:push workflows (GitHub's recursion guard) and cannot
+  # dispatch workflow_dispatch either, so the release is invoked as a
+  # reusable workflow against the dev HEAD this sync just force-pushed.
+  release:
+    name: Release (reusable)
+    uses: ./.github/workflows/fork-release.yml
+    needs: sync
+    with: {}
+    permissions:
+      contents: write
