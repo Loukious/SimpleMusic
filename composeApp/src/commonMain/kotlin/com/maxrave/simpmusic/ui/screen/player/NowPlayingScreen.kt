@@ -618,12 +618,12 @@ fun NowPlayingScreenContent(
     // Vote Dialog
     if (showVoteDialog) {
         val canVoteLyrics =
-            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.SIMPMUSIC &&
+            screenDataState.lyricsData?.lyricsProvider == LyricsProvider.SIMPLEMUSIC &&
                 screenDataState.lyricsData
                     ?.lyrics
                     ?.simpMusicLyrics != null
         val canVoteTranslatedLyrics =
-            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.SIMPMUSIC &&
+            screenDataState.lyricsData?.translatedLyrics?.second == LyricsProvider.SIMPLEMUSIC &&
                 screenDataState.lyricsData
                     ?.translatedLyrics
                     ?.first

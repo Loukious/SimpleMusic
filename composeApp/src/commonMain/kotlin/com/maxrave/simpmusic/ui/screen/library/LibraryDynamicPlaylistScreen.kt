@@ -797,7 +797,7 @@ sealed class LibraryDynamicPlaylistType {
          * `recap_2026_01` back into a [MonthlyRecap], or null for anything else.
          *
          * Validated rather than trusted: this arrives from a persisted navigation argument and,
-         * through the `simpmusic://library?type=` deep link, from outside the app entirely. A month
+         * through the `simplemusic://library?type=` deep link, from outside the app entirely. A month
          * of 0 or 13 would reach `Month(month)` and throw somewhere far away from here.
          */
         private fun parseMonthlyRecap(input: String): MonthlyRecap? {

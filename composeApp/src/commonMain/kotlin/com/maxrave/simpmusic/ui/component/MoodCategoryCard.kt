@@ -29,7 +29,7 @@ import simpmusic.composeapp.generated.resources.Res
 import simpmusic.composeapp.generated.resources.monochrome
 
 /**
- * A "Moods & Genres" browse category tile: the [playlistTitleGradient] and SimpMusic badge of an
+ * A "Moods & Genres" browse category tile: the [playlistTitleGradient] and SimpleMusic badge of an
  * artwork-less playlist tile, plus the tilted cover Spotify puts on its browse cards.
  *
  * [artworkUrl] is null until resolved — the category list carries no artwork at all, so the cover

@@ -66,10 +66,10 @@ import simpmusic.composeapp.generated.resources.scrobbling_info
 private val CONTENT_MAX_WIDTH = 420.dp
 
 /**
- * Last.fm's desktop auth flow, which is what SimpMusic uses on every platform.
+ * Last.fm's desktop auth flow, which is what SimpleMusic uses on every platform.
  *
  * There is no WebView here on purpose — unlike the Discord and Spotify screens, this never sees the
- * user's password. SimpMusic asks Last.fm for a request token, sends the user to Last.fm's own page
+ * user's password. SimpleMusic asks Last.fm for a request token, sends the user to Last.fm's own page
  * in their browser, and trades the approved token for a session key when they come back.
  *
  * @param token supplied when the user returns through the `wordbyword://lastfm-auth` callback; the
