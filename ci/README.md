@@ -12,6 +12,8 @@ upstream dev ──clone──▶ fresh checkout
                          │       check, direct-APK download button)
               vendor `core`     (the submodule becomes plain files — the fork
                          │       cannot push into maxrave-dev/core)
+              drop CLAUDE.md    (upstream's agent instructions — the fork does
+                         │       not carry the file at all)
               replace CI        (upstream workflows out, fork workflows in)
                          │
                 force-push ──▶ fork dev ──▶ version changed? ──▶ FOSS APK release
