@@ -126,7 +126,7 @@ private data class ArtistTile(
  * Playlists widget's "Recently added" strip almost row for row, and it left the lower half of a
  * 4x4 cell empty; the top queries were already in AnalyticsRepository and were going unused.
  *
- * Mood & Genres and Recommendations from the reference layout are still left out: SimpMusic has
+ * Mood & Genres and Recommendations from the reference layout are still left out: SimpleMusic has
  * no genre data yet, and shipping a permanently empty panel is worse than not showing it.
  */
 class ListeningInsightsWidget :
