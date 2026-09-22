@@ -107,7 +107,7 @@ import simpmusic.composeapp.generated.resources.wrapped_year
 import kotlin.random.Random
 
 /**
- * SimpMusic Wrapped: the year told as a story reel.
+ * SimpleMusic Wrapped: the year told as a story reel.
  *
  * The screen is a shell around cards it does not draw. Everything constant lives here — the
  * progress segments, the year label, the close button, the footer, the timer, the capture — and

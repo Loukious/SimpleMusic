@@ -88,7 +88,7 @@ private val BarInset = 6.dp
  *  3. crisp **icons + labels** on top (so the active label stays sharp, unlike when
  *     the blob is drawn over it).
  *
- * Adapted from Kyant's `LiquidBottomTabs`/`DampedDragAnimation` to SimpMusic's
+ * Adapted from Kyant's `LiquidBottomTabs`/`DampedDragAnimation` to SimpleMusic's
  * [BottomNavScreen]s, fixed tab width (to fit the existing ConstraintLayout) and the
  * bottom bar's luminance sampling.
  *

@@ -453,7 +453,7 @@ fun ArtistScreen(
                                 }
 
                                 // Apple Music-style action row: [Radio][Shuffle pill][Follow] centered.
-                                // In SimpMusic "play" an artist == shuffle, so the big middle button is Shuffle.
+                                // In SimpleMusic "play" an artist == shuffle, so the big middle button is Shuffle.
                                 Row(
                                     modifier =
                                         Modifier

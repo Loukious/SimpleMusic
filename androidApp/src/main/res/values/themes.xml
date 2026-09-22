@@ -8,7 +8,7 @@
         (THEME_MODE_DARK) and every immersive screen; letting it follow the system instead gave
         dark-theme users a white flash on light-mode devices.
     -->
-    <style name="Theme.SimpMusic" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.SimpleMusic" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 </resources>

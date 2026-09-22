@@ -558,7 +558,7 @@ internal fun ExpressiveBelowTheFold(
                             AIBadge()
                         }
                         Spacer(modifier = Modifier.weight(1f))
-                        // Vote button — only when the lyrics or the translation come from SimpMusic
+                        // Vote button — only when the lyrics or the translation come from SimpleMusic
                         // Lyrics. The rule itself lives on the shared contract (canVote), so a style
                         // cannot ship without it the way the Apple Music tab did.
                         if (state.screenData.lyricsData.canVote()) {
@@ -643,7 +643,7 @@ internal fun ExpressiveBelowTheFold(
                         Text(
                             text =
                                 when (state.screenData.lyricsData?.lyricsProvider) {
-                                    LyricsProvider.SIMPMUSIC -> {
+                                    LyricsProvider.SIMPLEMUSIC -> {
                                         stringResource(Res.string.lyrics_provider_simpmusic)
                                     }
 

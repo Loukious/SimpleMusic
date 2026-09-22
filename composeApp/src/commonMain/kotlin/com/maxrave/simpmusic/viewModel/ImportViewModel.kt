@@ -18,7 +18,7 @@ import simpmusic.composeapp.generated.resources.Res
 import simpmusic.composeapp.generated.resources.import_invalid_file
 
 /**
- * Drives an import of a file produced by the SimpMusic web converter.
+ * Drives an import of a file produced by the SimpleMusic web converter.
  *
  * The picked file is read here rather than in the repository because only the app module knows
  * what a picked file is. [KmpFile] comes from the same Calf picker the backup/restore flow uses,

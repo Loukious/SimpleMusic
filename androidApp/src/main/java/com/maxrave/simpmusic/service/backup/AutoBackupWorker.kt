@@ -54,7 +54,7 @@ class AutoBackupWorker(
             // Create temp backup file
             val tempBackupFile = createBackupFile(backupDownloaded)
 
-            // Save to Downloads/SimpMusic folder
+            // Save to Downloads/SimpleMusic folder
             val success = saveToDownloads(tempBackupFile)
 
             // Delete temp file
@@ -158,7 +158,7 @@ class AutoBackupWorker(
                 put(MediaStore.Downloads.DISPLAY_NAME, fileName)
                 put(MediaStore.Downloads.MIME_TYPE, "application/zip")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    put(MediaStore.Downloads.RELATIVE_PATH, "Download/SimpMusic")
+                    put(MediaStore.Downloads.RELATIVE_PATH, "Download/SimpleMusic")
                 }
             }
 
@@ -173,7 +173,7 @@ class AutoBackupWorker(
                         input.copyTo(output)
                     }
                 }
-                Logger.i(TAG, "Backup saved to Downloads/SimpMusic/$fileName")
+                Logger.i(TAG, "Backup saved to Downloads/SimpleMusic/$fileName")
                 true
             } ?: false
         } catch (e: Exception) {
@@ -197,7 +197,7 @@ class AutoBackupWorker(
             }
 
             val selectionArgs = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                arrayOf("Download/SimpMusic/", "simpmusic_backup_%.zip")
+                arrayOf("Download/SimpleMusic/", "simpmusic_backup_%.zip")
             } else {
                 arrayOf("simpmusic_backup_%.zip")
             }
