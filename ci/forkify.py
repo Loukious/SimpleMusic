@@ -10,6 +10,8 @@ than just a rebranded copy:
   2. Give UpdateData the release's APK download URL and have the update
      dialog's Download button open it directly instead of the upstream
      website.
+  3. Keep upstream blog notifications available, but make them opt-in by
+     default instead of scheduling the RSS worker for every fresh install.
 
 Every code replacement is EXACT and verified: if upstream edits any of the
 touched regions, this script exits non-zero with the failing pattern so the
@@ -29,6 +31,26 @@ FORK_REPOINTS = [
 ]
 
 EXACT_EDITS = [
+    # ---- Blog notifications stay available but default to OFF ----
+    (
+        "core/data/src/commonMain/kotlin/com/maxrave/data/dataStore/DataStoreManagerImpl.kt",
+        """    override val blogNotificationEnabled: Flow<String> =
+        settingsDataStore.data.map { preferences ->
+            preferences[BLOG_NOTIFICATION_ENABLED] ?: TRUE
+        }""",
+        """    override val blogNotificationEnabled: Flow<String> =
+        settingsDataStore.data.map { preferences ->
+            preferences[BLOG_NOTIFICATION_ENABLED] ?: FALSE
+        }""",
+    ),
+    (
+        "composeApp/src/commonMain/kotlin/com/maxrave/simpmusic/viewModel/SettingsViewModel.kt",
+        """    private val _blogNotificationEnabled = MutableStateFlow(true)
+    val blogNotificationEnabled: StateFlow<Boolean> = _blogNotificationEnabled""",
+        """    private val _blogNotificationEnabled = MutableStateFlow(false)
+    val blogNotificationEnabled: StateFlow<Boolean> = _blogNotificationEnabled""",
+    ),
+
     # ---- UpdateData gains the APK download URL (core) ----
     (
         "core/domain/src/commonMain/kotlin/com/maxrave/domain/data/model/update/UpdateData.kt",
