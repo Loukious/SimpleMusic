@@ -21,10 +21,10 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Whether the lyrics currently on screen can be rated.
  *
- * SimpMusic Lyrics is the only provider with a vote endpoint, and the vote is cast against the
- * SimpMusic record itself — so the provider tag alone is NOT the condition: `simpMusicLyrics`
+ * SimpleMusic Lyrics is the only provider with a vote endpoint, and the vote is cast against the
+ * SimpleMusic record itself — so the provider tag alone is NOT the condition: `simpMusicLyrics`
  * must actually be there. Either half qualifying is enough, because the dialog rates whichever
- * of the two came from SimpMusic.
+ * of the two came from SimpleMusic.
  *
  * Lives on the contract the three styles share. The Apple Music style shipped its floating vote
  * button ungated — offering a rating on YouTube, LRCLIB and Spotify lyrics alike — precisely
@@ -34,9 +34,9 @@ import kotlinx.coroutines.flow.StateFlow
 internal fun NowPlayingScreenData.LyricsData?.canVote(): Boolean {
     val data = this ?: return false
     val votableLyrics =
-        data.lyricsProvider == LyricsProvider.SIMPMUSIC && data.lyrics.simpMusicLyrics != null
+        data.lyricsProvider == LyricsProvider.SIMPLEMUSIC && data.lyrics.simpMusicLyrics != null
     val votableTranslation =
-        data.translatedLyrics?.second == LyricsProvider.SIMPMUSIC &&
+        data.translatedLyrics?.second == LyricsProvider.SIMPLEMUSIC &&
             data.translatedLyrics?.first?.simpMusicLyrics != null
     return votableLyrics || votableTranslation
 }
