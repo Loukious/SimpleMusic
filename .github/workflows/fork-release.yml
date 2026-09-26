@@ -1,0 +1,133 @@
+name: Fork release — build FOSS APK
+
+# Builds the FOSS variant (no Sentry / Last.fm / Cast — no upstream secrets
+# needed) and publishes it as a GitHub Release tagged v<version-name>.
+#
+# The in-app update checker queries this release:
+#   api.github.com/repos/Loukious/SimpleMusic/releases/latest
+# and the update dialog's Download button opens the release's .apk asset
+# directly (UpdateData.downloadUrl).
+#
+# Signing: decode the BASE_64_SIGNING_KEY secret into simplemusic.jks, the
+# same shape upstream's release workflow uses. If the secret is absent a
+# TEMPORARY keystore is generated so the first release can be built — the
+# signature then changes on every release, so Android will refuse in-place
+# updates. Set up a stable key once (see ci/README.md).
+
+on:
+  # Manual runs, pushes to dev made with real user credentials, and — most
+  # importantly — workflow_call from fork-sync.yml: a GITHUB_TOKEN push does
+  # NOT trigger on:push workflows (GitHub's recursion guard) and GITHUB_TOKEN
+  # cannot dispatch workflow_dispatch events (403 "Resource not accessible by
+  # integration"), so the sync calls this workflow as a reusable job instead.
+  # The already-released check makes re-runs no-ops.
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + publish FOSS APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout fork dev
+        uses: actions/checkout@v6
+        with:
+          ref: dev
+          # core is vendored into the tree — no submodules to fetch
+
+      - name: Read version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(grep '^version-name' gradle/libs.versions.toml | head -1 | cut -d'"' -f2)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing version: v$VERSION"
+
+      - name: Skip if this tag is already released
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release v${VERSION} already exists — nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up JDK 21
+        if: steps.check.outputs.exists != 'true'
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: microsoft
+          cache: gradle
+
+      - name: Restore signing keystore
+        if: steps.check.outputs.exists != 'true'
+        env:
+          BASE_64_SIGNING_KEY: ${{ secrets.BASE_64_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "$BASE_64_SIGNING_KEY" ]; then
+            echo "$BASE_64_SIGNING_KEY" | base64 -d > simplemusic.jks
+          else
+            echo "::warning::BASE_64_SIGNING_KEY not set — generating a TEMPORARY keystore."
+            echo "::warning::The signature changes every release until a stable key is configured (ci/README.md)."
+            keytool -genkeypair -v \
+              -keystore simplemusic.jks \
+              -alias simplemusic \
+              -keyalg RSA -keysize 4096 -validity 10000 \
+              -storepass simplemusic -keypass simplemusic \
+              -dname "CN=SimpleMusic, OU=Fork, O=Loukious, C=US"
+          fi
+
+      - name: Build FOSS release APK
+        if: steps.check.outputs.exists != 'true'
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD || 'simplemusic' }}
+          KEY_ALIAS: ${{ secrets.ALIAS || 'simplemusic' }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD || 'simplemusic' }}
+        run: |
+          set -euo pipefail
+          echo "" >> ./gradle.properties
+          echo "isFullBuild=false" >> ./gradle.properties
+          ./build_and_sign_apk.sh --release --foss
+
+      - name: Create release and upload APK
+        if: steps.check.outputs.exists != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          APK=$(find androidApp/build/outputs/apk/release -name '*.apk' | head -1)
+          if [ -z "$APK" ]; then
+            echo "::error::No APK found after build"
+            exit 1
+          fi
+          ASSET="SimpleMusic-foss-v${VERSION}.apk"
+          cp "$APK" "$ASSET"
+          # Target the checked-out dev HEAD, not GITHUB_SHA: when called as a
+          # reusable workflow by fork-sync, GITHUB_SHA is the commit the sync
+          # run started from — the tree it just force-pushed past.
+          TARGET=$(git rev-parse HEAD)
+          gh release create "v${VERSION}" \
+            --target "$TARGET" \
+            --title "SimpleMusic v${VERSION}" \
+            --latest \
+            --notes "FOSS build of the SimpleMusic fork, rebuilt from [Loukious/SimpleMusic](https://github.com/Loukious/SimpleMusic) \`dev\`.
+
+          The in-app update checker picks this release up automatically: the Download button in the update dialog opens the APK asset directly." \
+            "$ASSET"
+          echo "Released v${VERSION} with asset $ASSET"
