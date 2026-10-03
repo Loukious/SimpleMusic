@@ -223,7 +223,7 @@ class SettingsViewModel(
     private val _localTrackingEnabled = MutableStateFlow<Boolean>(false)
     val localTrackingEnabled: StateFlow<Boolean> = _localTrackingEnabled
 
-    private val _blogNotificationEnabled = MutableStateFlow(true)
+    private val _blogNotificationEnabled = MutableStateFlow(false)
     val blogNotificationEnabled: StateFlow<Boolean> = _blogNotificationEnabled
 
     // Auto Backup

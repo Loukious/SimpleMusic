@@ -163,7 +163,7 @@ internal fun ShareLyricsCard(
             }
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = "SimpMusic",
+                text = "SimpleMusic",
                 color = secondary,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Medium,

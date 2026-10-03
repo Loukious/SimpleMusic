@@ -8,7 +8,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-// desktopApp — JVM application module for SimpMusic Desktop.
+// desktopApp — JVM application module for SimpleMusic Desktop.
 //
 // Per JetBrains 2026 KMP guidance (AGP 9 + new default structure), the
 // platform-app entry points live in dedicated modules separate from the
@@ -117,7 +117,7 @@ dependencies {
     windowsAmd64(libs.compose.windows.x64)
 }
 
-// Append SimpMusic-specific keys to Conveyor's generated config file and
+// Append SimpleMusic-specific keys to Conveyor's generated config file and
 // — crucially — replace the auto-detected `app.inputs` classpath with
 // ProGuard's shrunk jar directory so the packaged AppImage carries
 // obfuscated + size-reduced bytecode instead of raw Gradle output.
@@ -128,8 +128,8 @@ tasks.named<hydraulic.conveyor.gradle.WriteConveyorConfigTask>("writeConveyorCon
     doLast {
         destination.get().asFile.appendText(
             """
-            |app.fsname = simpmusic
-            |app.display-name = SimpMusic
+            |app.fsname = simplemusic
+            |app.display-name = SimpleMusic
             |app.rdns-name = com.maxrave.simpmusic
             |
             |// Override the Gradle-detected classpath with the ProGuard'd
@@ -167,7 +167,7 @@ compose.desktop {
             }
             targetFormats(*listTarget.toTypedArray())
             modules("jdk.unsupported")
-            packageName = "SimpMusic"
+            packageName = "SimpleMusic"
             macOS {
                 val formatedDate =
                     Instant.now().let {
@@ -332,7 +332,7 @@ tasks.register("packageConveyorAppImage") {
     )
 
     doLast {
-        val appName = "SimpMusic"
+        val appName = "SimpleMusic"
         val conveyorOutput = rootDir.resolve("output")
         if (!conveyorOutput.exists()) {
             throw GradleException(
@@ -377,7 +377,7 @@ tasks.register("packageConveyorAppImage") {
 
         // Ensure top-level PNG icon expected by appimagetool exists.
         val iconSrc = rootDir.resolve("composeApp/icon/circle_app_icon.png")
-        val iconDst = appDir.resolve("simpmusic.png")
+        val iconDst = appDir.resolve("simplemusic.png")
         if (!iconDst.exists() && iconSrc.exists()) {
             FileUtils.copyFile(iconSrc, iconDst)
         }
@@ -385,7 +385,7 @@ tasks.register("packageConveyorAppImage") {
         val versionName =
             libs.versions.version.name
                 .get()
-        val desktopFile = appDir.resolve("simpmusic.desktop")
+        val desktopFile = appDir.resolve("simplemusic.desktop")
         // This file, not Conveyor's, is what actually reaches the user: AppRun installs it into
         // ~/.local/share/applications and runs update-desktop-database. So every scheme listed in
         // `app.url-schemes` in conveyor.conf has to be repeated here as an x-scheme-handler MIME
@@ -396,13 +396,13 @@ tasks.register("packageConveyorAppImage") {
             """[Desktop Entry]
             |Type=Application
             |Version=1.0
-            |Name=SimpMusic
-            |Comment=SimpMusic v$versionName - FOSS YouTube Music Client
-            |Exec=bin/simpmusic %u
-            |Icon=simpmusic
+            |Name=SimpleMusic
+            |Comment=SimpleMusic v$versionName - FOSS YouTube Music Client
+            |Exec=bin/simplemusic %u
+            |Icon=simplemusic
             |Terminal=false
             |Categories=Audio;AudioVideo;
-            |StartupWMClass=SimpMusic
+            |StartupWMClass=SimpleMusic
             |MimeType=x-scheme-handler/simpmusic;x-scheme-handler/wordbyword;
             |
             """.trimMargin(),
@@ -417,9 +417,9 @@ tasks.register("packageConveyorAppImage") {
             |
             |# Install icon into XDG dirs so GNOME/KDE pick it up the first time.
             |ICON_DIR="${'$'}HOME/.local/share/icons/hicolor/256x256/apps"
-            |if [ ! -f "${'$'}ICON_DIR/simpmusic.png" ] || [ "${'$'}HERE/simpmusic.png" -nt "${'$'}ICON_DIR/simpmusic.png" ]; then
+            |if [ ! -f "${'$'}ICON_DIR/simplemusic.png" ] || [ "${'$'}HERE/simplemusic.png" -nt "${'$'}ICON_DIR/simplemusic.png" ]; then
             |    mkdir -p "${'$'}ICON_DIR"
-            |    cp "${'$'}HERE/simpmusic.png" "${'$'}ICON_DIR/simpmusic.png"
+            |    cp "${'$'}HERE/simplemusic.png" "${'$'}ICON_DIR/simplemusic.png"
             |    gtk-update-icon-cache -f -t "${'$'}HOME/.local/share/icons/hicolor" 2>/dev/null || true
             |fi
             |
@@ -427,7 +427,7 @@ tasks.register("packageConveyorAppImage") {
             |DESKTOP_DIR="${'$'}HOME/.local/share/applications"
             |mkdir -p "${'$'}DESKTOP_DIR"
             |APPIMAGE_PATH="${'$'}{APPIMAGE:-${'$'}SELF}"
-            |sed "s|Exec=bin/simpmusic|Exec=${'$'}APPIMAGE_PATH|" "${'$'}HERE/simpmusic.desktop" > "${'$'}DESKTOP_DIR/com-maxrave-simpmusic-MainKt.desktop"
+            |sed "s|Exec=bin/simplemusic|Exec=${'$'}APPIMAGE_PATH|" "${'$'}HERE/simplemusic.desktop" > "${'$'}DESKTOP_DIR/com-maxrave-simplemusic-MainKt.desktop"
             |update-desktop-database "${'$'}DESKTOP_DIR" 2>/dev/null || true
             |
             |# Cap glibc's per-thread malloc arenas.
@@ -444,14 +444,14 @@ tasks.register("packageConveyorAppImage") {
             |export MALLOC_ARENA_MAX=2
             |
             |cd "${'$'}HERE"
-            |exec bin/simpmusic "${'$'}@"
+            |exec bin/simplemusic "${'$'}@"
             |
             """.trimMargin(),
         )
         appRun.setExecutable(true, false)
 
-        // Conveyor's launcher lives at output/bin/simpmusic (lowercase).
-        val appExecutable = appDir.resolve("bin/simpmusic")
+        // Conveyor's launcher lives at output/bin/simplemusic (lowercase).
+        val appExecutable = appDir.resolve("bin/simplemusic")
         if (appExecutable.exists() && !appExecutable.canExecute()) {
             appExecutable.setExecutable(true)
         }
@@ -479,7 +479,7 @@ tasks.register("packageConveyorAppImage") {
 // Single command for users: `./gradlew :desktopApp:buildLinuxAppImage --no-configuration-cache`
 tasks.register("buildLinuxAppImage") {
     group = "distribution"
-    description = "Full SimpMusic Desktop Linux AppImage build pipeline (mpvSetupAll → conveyor → AppImage)."
+    description = "Full SimpleMusic Desktop Linux AppImage build pipeline (mpvSetupAll → conveyor → AppImage)."
     dependsOn(conveyorMakeLinuxApp)
     finalizedBy("packageConveyorAppImage")
 }
@@ -523,13 +523,13 @@ val conveyorMakeMacZipAarch64 =
 
 tasks.register("buildMacZipAmd64") {
     group = "distribution"
-    description = "Full SimpMusic Desktop macOS Intel .zip pipeline (mpvSetupAll → conveyor)."
+    description = "Full SimpleMusic Desktop macOS Intel .zip pipeline (mpvSetupAll → conveyor)."
     dependsOn(conveyorMakeMacZipAmd64)
 }
 
 tasks.register("buildMacZipAarch64") {
     group = "distribution"
-    description = "Full SimpMusic Desktop macOS Apple Silicon .zip pipeline (mpvSetupAll → conveyor)."
+    description = "Full SimpleMusic Desktop macOS Apple Silicon .zip pipeline (mpvSetupAll → conveyor)."
     dependsOn(conveyorMakeMacZipAarch64)
 }
 
@@ -555,7 +555,7 @@ val conveyorMakeWindowsMsix =
 
 tasks.register("buildWindowsMsix") {
     group = "distribution"
-    description = "Full SimpMusic Desktop Windows .msix pipeline (mpvSetupAll → conveyor)."
+    description = "Full SimpleMusic Desktop Windows .msix pipeline (mpvSetupAll → conveyor)."
     dependsOn(conveyorMakeWindowsMsix)
 }
 
