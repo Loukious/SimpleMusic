@@ -1,6 +1,6 @@
 - Add Canvas subtitle sync display for lyrics
 - Add BPM, key, and scale display to player bottom sheet
-- Add simpmusic:// and simpmusic.org deep link support
+- Add simplemusic:// and simpmusic.org deep link support
 - Add Auto Crossfade mode (like AutoMix)
 - Redesign playback speed/pitch controls with improved animations
 - Standardize share URL to use simpmusic.org
