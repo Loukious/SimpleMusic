@@ -1,11 +1,11 @@
 ---
-name: simpmusic-icons
-description: Add or change an icon in SimpMusic. Every icon is a generated Material Symbols ImageVector under ui/icon, addressed as SimpIcons.<Name> — there is no material-icons dependency and no XML icon drawable. Use when adding a new icon, replacing one, or hitting ImageVector/Painter type errors.
+name: simplemusic-icons
+description: Add or change an icon in SimpleMusic. Every icon is a generated Material Symbols ImageVector under ui/icon, addressed as SimpIcons.<Name> — there is no material-icons dependency and no XML icon drawable. Use when adding a new icon, replacing one, or hitting ImageVector/Painter type errors.
 ---
 
-# SimpMusic Icons
+# SimpleMusic Icons
 
-Icons live in `composeApp/src/commonMain/kotlin/com/maxrave/simpmusic/ui/icon/`, one file per
+Icons live in `composeApp/src/commonMain/kotlin/com/maxrave/simplemusic/ui/icon/`, one file per
 icon, each declaring `val SimpIcons.<Name>: ImageVector`.
 
 Two things are deliberately absent and must not come back:
@@ -73,7 +73,7 @@ compile errors in one pass: it also hit `Painter` parameters, and it landed *ins
 |---|---|
 | `baseline_downloaded.xml` | `#FF00A0CB` — the blue *is* the "downloaded" state |
 | `baseline_favorite_24.xml` | `#D10000` — the red *is* the "liked" state |
-| `mono.xml`, `monochrome.xml` | SimpMusic logos (`#0AEAF8` / black) |
+| `mono.xml`, `monochrome.xml` | SimpleMusic logos (`#0AEAF8` / black) |
 | `app_icon.png`, `circle_app_icon.png`, `holder*.png` | bitmaps, not icons |
 
 If a state needs that colour with a shared symbol, pass it explicitly — e.g. `ActionButton`'s
