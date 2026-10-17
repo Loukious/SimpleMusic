@@ -218,7 +218,7 @@ internal fun AppleMusicLyricsView(
                                 )
                             }
                             // One line per fact, not one line joined by a bullet. "Word by word"
-                            // and "Lyrics provided by SimpMusic Lyrics" are two different things,
+                            // and "Lyrics provided by SimpleMusic Lyrics" are two different things,
                             // and glued together they make a single line long enough to run the
                             // width of the screen.
                             //
@@ -269,7 +269,7 @@ internal fun AppleMusicLyricsView(
                                 AppleMusicFloatingCircleButton(icon = SimpIcons.AvTimer, onClick = onClick)
                             }
                         }
-                        // Only when the lyrics (or the translation) actually came from SimpMusic
+                        // Only when the lyrics (or the translation) actually came from SimpleMusic
                         // Lyrics — the sole provider that accepts a vote. Classic and M3E have
                         // always gated theirs; this one did not, so it invited a rating on
                         // YouTube/LRCLIB/Spotify lyrics that had nowhere to go.
@@ -360,7 +360,7 @@ private fun appleMusicLyricsSyncText(lyricsData: NowPlayingScreenData.LyricsData
 @Composable
 private fun appleMusicLyricsProviderText(lyricsData: NowPlayingScreenData.LyricsData): String =
     when (lyricsData.lyricsProvider) {
-        LyricsProvider.SIMPMUSIC -> stringResource(Res.string.lyrics_provider_simpmusic)
+        LyricsProvider.SIMPLEMUSIC -> stringResource(Res.string.lyrics_provider_simpmusic)
         LyricsProvider.LRCLIB -> stringResource(Res.string.lyrics_provider_lrc)
         LyricsProvider.YOUTUBE -> stringResource(Res.string.lyrics_provider_youtube)
         LyricsProvider.SPOTIFY -> stringResource(Res.string.spotify_lyrics_provider)
