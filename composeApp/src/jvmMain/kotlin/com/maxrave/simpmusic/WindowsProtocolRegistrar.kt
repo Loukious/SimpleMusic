@@ -8,8 +8,8 @@ import com.maxrave.logger.Logger
  *
  * Registry structure:
  * ```
- * HKCU\Software\Classes\simpmusic
- *     (Default) = "URL:SimpMusic Protocol"
+ * HKCU\Software\Classes\simplemusic
+ *     (Default) = "URL:SimpleMusic Protocol"
  *     URL Protocol = ""
  *     \DefaultIcon
  *         (Default) = "\"<exe_path>\",0"
@@ -37,8 +37,8 @@ object WindowsProtocolRegistrar {
             return
         }
 
-        register(SCHEME, "URL:SimpMusic Protocol", exePath)
-        register(LASTFM_SCHEME, "URL:SimpMusic Last.fm Callback", exePath)
+        register(SCHEME, "URL:SimpleMusic Protocol", exePath)
+        register(LASTFM_SCHEME, "URL:SimpleMusic Last.fm Callback", exePath)
     }
 
     private fun register(
@@ -77,7 +77,7 @@ object WindowsProtocolRegistrar {
     ): Boolean {
         return try {
             val result = regQuery("${regKeyOf(scheme)}\\shell\\open\\command", null)
-            // Registry stores path with quotes: "C:\path\to\SimpMusic.exe" "%1"
+            // Registry stores path with quotes: "C:\path\to\SimpleMusic.exe" "%1"
             // Normalize both for comparison
             val normalizedExe = currentExePath.replace("\\", "/").lowercase()
             result?.replace("\\", "/")?.lowercase()?.contains(normalizedExe) == true
@@ -89,8 +89,8 @@ object WindowsProtocolRegistrar {
     private fun resolveExePath(): String? {
         // JPackage directory structure:
         //   <app>/runtime/...  (java.home points here)
-        //   <app>/SimpMusic.exe
-        // So we go: java.home → parent (runtime) → parent (app) → SimpMusic.exe
+        //   <app>/SimpleMusic.exe
+        // So we go: java.home → parent (runtime) → parent (app) → SimpleMusic.exe
         val javaHome = System.getProperty("java.home") ?: return null
         val javaHomeDir = java.io.File(javaHome)
 
@@ -105,7 +105,7 @@ object WindowsProtocolRegistrar {
         }
 
         if (appDir != null) {
-            val exeFile = java.io.File(appDir, "SimpMusic.exe")
+            val exeFile = java.io.File(appDir, "SimpleMusic.exe")
             if (exeFile.exists()) {
                 return exeFile.absolutePath
             }

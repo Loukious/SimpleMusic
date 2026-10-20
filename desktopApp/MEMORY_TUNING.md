@@ -238,8 +238,8 @@ contention.
 ### Revert everything
 
 ```bash
-git -C core checkout -- media/media-jvm/src/main/java/com/simpmusic/media_jvm/mpv/MpvPlayerAdapter.kt
-rm -rf core/media/media-jvm/src/main/java/com/simpmusic/media_jvm/memory
+git -C core checkout -- media/media-jvm/src/main/java/com/simplemusic/media_jvm/mpv/MpvPlayerAdapter.kt
+rm -rf core/media/media-jvm/src/main/java/com/simplemusic/media_jvm/memory
 git checkout -- conveyor.conf desktopApp/build.gradle.kts
 ```
 
@@ -255,7 +255,7 @@ over a session.
 **Linux**
 
 ```bash
-pid=$(pgrep -f -i simpmusic | while read p; do [ "$(cat /proc/$p/comm)" = simpmusic ] && echo $p; done | head -1)
+pid=$(pgrep -f -i simplemusic | while read p; do [ "$(cat /proc/$p/comm)" = simplemusic ] && echo $p; done | head -1)
 grep VmRSS /proc/$pid/status
 jcmd $pid GC.heap_info
 # count glibc arenas (64 MB-aligned anonymous mappings)
@@ -266,7 +266,7 @@ awk '/^[0-9a-f]/{split($1,a,"-"); if ($6=="") print a[1]}' /proc/$pid/maps |
 **macOS**
 
 ```bash
-pid=$(pgrep -f SimpMusic | head -1)
+pid=$(pgrep -f SimpleMusic | head -1)
 ps -o rss= -p $pid | awk '{print "RSS: "int($1/1024)" MB"}'
 vmmap -summary $pid | head -25
 jcmd $pid GC.heap_info
@@ -275,7 +275,7 @@ jcmd $pid GC.heap_info
 **Windows (PowerShell)**
 
 ```powershell
-Get-Process SimpMusic | Select-Object Name,Id,@{n="WorkingSet_MB";e={[int]($_.WorkingSet64/1MB)}}
+Get-Process SimpleMusic | Select-Object Name,Id,@{n="WorkingSet_MB";e={[int]($_.WorkingSet64/1MB)}}
 jcmd <pid> GC.heap_info
 ```
 
