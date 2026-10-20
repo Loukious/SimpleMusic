@@ -12,6 +12,8 @@ than just a rebranded copy:
      website.
   3. Keep upstream blog notifications available, but make them opt-in by
      default instead of scheduling the RSS worker for every fresh install.
+  4. Avoid applying upstream F-Droid signing-key enforcement to this independently
+     signed fork (regular and vivo release variants share MainActivity).
 
 Every code replacement is EXACT and verified: if upstream edits any of the
 touched regions, this script exits non-zero with the failing pattern so the
@@ -31,6 +33,17 @@ FORK_REPOINTS = [
 ]
 
 EXACT_EDITS = [
+    # ---- Fork APKs use a different signing key from upstream's F-Droid build ----
+    # MainActivity is shared by androidApp and vivoAndroidApp, so a single
+    # exact edit covers both release variants on every upstream rebuild.
+    (
+        "androidApp/src/main/java/com/maxrave/simpmusic/MainActivity.kt",
+        """        if (!BuildConfig.DEBUG) viewModel.checkOfficialBuild(packageName, signingCertSha256())
+        setContent {""",
+        """        // Fork releases are independently signed; upstream F-Droid keys must not gate their UI.
+        setContent {""",
+    ),
+    
     # ---- Blog notifications stay available but default to OFF ----
     (
         "core/data/src/commonMain/kotlin/com/maxrave/data/dataStore/DataStoreManagerImpl.kt",
