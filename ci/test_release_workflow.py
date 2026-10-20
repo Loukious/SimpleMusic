@@ -26,7 +26,8 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertIn("3f6d5b9742bc2510c1f7a1f2cf55fcefab57219c4e778e2b4ce129b8b0ce476a", self.yaml)
         self.assertIn("-storepass:env KEYSTORE_PASSWORD", self.yaml)
         self.assertIn('if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then', self.yaml)
-        self.assertIn('grep -Fq "Signer #1 certificate SHA-256 digest: $EXPECTED_SHA256"', self.yaml)
+        self.assertNotIn('grep -Fq "Signer #1 certificate SHA-256 digest: $EXPECTED_SHA256"', self.yaml)
+        self.assertIn('"$APKSIGNER" verify --verbose "$APK"', self.yaml)
 
     def test_required_abis_guarded(self):
         for arch in ("arm64-v8a", "armeabi-v7a", "x86_64"):
