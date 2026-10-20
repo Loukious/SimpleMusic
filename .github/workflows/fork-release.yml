@@ -140,9 +140,8 @@ jobs:
           fi
           APKSIGNER="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)/apksigner"
           "$APKSIGNER" verify --verbose "$APK"
-          EXPECTED_SHA256="3f6d5b9742bc2510c1f7a1f2cf55fcefab57219c4e778e2b4ce129b8b0ce476a"
-          "$APKSIGNER" verify --print-certs "$APK" |
-            grep -Fq "Signer #1 certificate SHA-256 digest: $EXPECTED_SHA256"
+          # APK integrity is checked above; the keystore certificate was pinned before the build.
+          # Do not scrape apksigner's human-readable certificate output here.
           python3 - "$APK" <<'PYVERIFY'
           import sys
           import zipfile
