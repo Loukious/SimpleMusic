@@ -121,3 +121,24 @@ against the new upstream source — it is the only maintenance this fork needs.
 
 `ci/transform.py` never fails: it is pure string replacement and re-applies
 cleanly whatever upstream does.
+
+## Release APK correctness and signing identity (2026-10-20)
+
+The publishing workflow **must** select the signed universal APK explicitly:
+`androidApp/build/outputs/apk/release/SimpleMusic-foss-universal-release.apk`.
+The previous `find '*.apk' | head -1` selected an x86_64-only APK in v2.3.0.
+The workflow verifies the APK signature and that all 3 Android ABIs are present
+before upload.
+
+Never generate throwaway release keys. The working GitHub Actions signing key
+matches the certificate in v2.1.0 and v2.3.0 (SHA-256
+`3f6d5b9742bc2510c1f7a1f2cf55fcefab57219c4e778e2b4ce129b8b0ce476a`).
+The v2.2.0 release was signed with a temporary different key, and existing
+v2.2.0 installations cannot be updated in place using the stable key; users
+must back up their app data before any uninstall/reinstall.
+
+Use **Actions → Fork release → Run workflow** and enable
+`repair_existing_release` only to replace a known-broken APK asset for an
+existing tag. Normal scheduled sync/release runs will continue to skip tags
+that already exist. The replacement is performed only after build, signature,
+and ABI verification succeeds.
