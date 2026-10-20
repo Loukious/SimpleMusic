@@ -39,6 +39,25 @@ default `GITHUB_TOKEN` cannot dispatch `workflow_dispatch` events (403
 HEAD it just force-pushed. Pushes made with real user credentials still
 trigger the release workflow directly.
 
+### Signing compatibility
+
+The upstream Android release UI check compares the APK signature against **upstream**
+F-Droid signing-key metadata. Our releases use our own keystore, so that check
+would incorrectly block both regular and vivo releases. `ci/forkify.py` makes
+an exact, verified edit to the **shared** `androidApp/.../MainActivity.kt` to
+omit the check on every rebuild. If upstream changes the call site, sync fails
+rather than silently restoring the blocking behavior.
+
+Android still verifies that APK updates have the installed application's signing
+certificate. Keep a stable fork keystore; this change is not a substitute for
+release signing. The check's removal means upstream's anti-repack UI screen
+does not protect this fork. Regression tests: `python -m unittest discover -s ci
+-p 'test_*.py' -v`.
+
+**Existing releases are not rebuilt by this fix alone.** The release workflow
+skips any version tag that already exists; publish a new version to ship a
+corrected APK.
+
 The in-app update checker (`core/…/Ytmusic.kt`) queries
 `api.github.com/repos/Loukious/SimpleMusic/releases/latest`; the update
 dialog's Download button opens the release's `.apk` asset directly.
