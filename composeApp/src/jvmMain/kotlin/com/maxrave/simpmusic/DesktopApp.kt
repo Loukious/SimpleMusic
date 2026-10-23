@@ -168,14 +168,14 @@ fun runDesktopApp(args: Array<String> = emptyArray()) {
     // Note: macOS does NOT pass URI as args — it uses Apple Events via setOpenURIHandler
     //
     // Matched by shape rather than against a fixed list of schemes. The list used to be
-    // simpmusic:// + http:// + https://, which silently dropped the Last.fm callback
+    // simplemusic:// + http:// + https://, which silently dropped the Last.fm callback
     // (wordbyword://lastfm-auth?token=…): the OS launched us with the token, this filter
     // discarded it, and the app merely came to the foreground while the login sat there
     // waiting forever. Any scheme we register with the OS must survive this line.
     val deepLinkArg = args.firstOrNull()?.takeIf { DEEP_LINK_ARG.matches(it) }
     // Single-instance guard — MUST run before startKoin. The DataStore Koin
     // singleton is `createdAtStart`, so a second Windows instance would touch
-    // ~/.simpmusic/settings.preferences_pb and crash with an "Unable to rename
+    // ~/.simplemusic/settings.preferences_pb and crash with an "Unable to rename
     // ...tmp" IOException (#2044) before it ever reached the old in-Compose check.
     // Bail out here, before Koin/DataStore initialize.
     val isSingleInstance =
@@ -204,7 +204,7 @@ fun runDesktopApp(args: Array<String> = emptyArray()) {
                 versionName = BuildKonfig.versionName,
                 platform = "${System.getProperty("os.name")} ${System.getProperty("os.version")}",
                 // Set by desktopApp's JavaExec tasks (run, hotRunJvm); a packaged install never has it.
-                isDevBuild = System.getProperty("simpmusic.dev") == "true",
+                isDevBuild = System.getProperty("simplemusic.dev") == "true",
             ),
         )
         loadKoinModules(viewModelModule)
@@ -264,7 +264,7 @@ fun runDesktopApp(args: Array<String> = emptyArray()) {
         }
     }
 
-    // Register simpmusic:// protocol handler on Windows (HKCU, no admin needed)
+    // Register simplemusic:// protocol handler on Windows (HKCU, no admin needed)
     WindowsProtocolRegistrar.register()
 
     val desktopNotificationManager = getKoin().get<DesktopNotificationManager>()

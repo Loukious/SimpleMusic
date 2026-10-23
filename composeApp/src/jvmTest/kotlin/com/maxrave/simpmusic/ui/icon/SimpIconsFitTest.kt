@@ -14,8 +14,8 @@ import kotlin.test.assertTrue
 class SimpIconsFitTest {
     private val iconDir =
         listOf(
-            "src/commonMain/kotlin/com/maxrave/simpmusic/ui/icon",
-            "composeApp/src/commonMain/kotlin/com/maxrave/simpmusic/ui/icon",
+            "src/commonMain/kotlin/com/maxrave/simplemusic/ui/icon",
+            "composeApp/src/commonMain/kotlin/com/maxrave/simplemusic/ui/icon",
         ).map(::File).first { it.isDirectory }
 
     private val iconFiles =
