@@ -137,5 +137,6 @@ jobs:
     uses: ./.github/workflows/fork-release.yml
     needs: sync
     with: {}
+    secrets: inherit
     permissions:
       contents: write
