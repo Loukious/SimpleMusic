@@ -90,7 +90,7 @@ class RssFeedNotifyWork(
                 connectTimeout = 15_000
                 readTimeout = 15_000
                 requestMethod = "GET"
-                setRequestProperty("User-Agent", "SimpMusic")
+                setRequestProperty("User-Agent", "SimpleMusic")
             }
         return try {
             connection.inputStream.bufferedReader().use { it.readText() }

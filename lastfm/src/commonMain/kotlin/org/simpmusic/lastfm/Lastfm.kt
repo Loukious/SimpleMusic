@@ -12,7 +12,7 @@ data class LastfmSession(
     val sessionKey: String,
 )
 
-/** What SimpMusic knows about a track, in the shape Last.fm's parameters expect. */
+/** What SimpleMusic knows about a track, in the shape Last.fm's parameters expect. */
 data class LastfmTrack(
     val artist: String,
     val track: String,

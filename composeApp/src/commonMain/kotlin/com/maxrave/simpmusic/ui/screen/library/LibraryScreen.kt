@@ -177,7 +177,7 @@ fun LibraryScreen(
 
     val chipRowState = rememberScrollState()
     val currentFilter by viewModel.currentScreen.collectAsStateWithLifecycle()
-    // A chip asked for by a deep link (simpmusic://library?tab=…), applied once and cleared.
+    // A chip asked for by a deep link (simplemusic://library?tab=…), applied once and cleared.
     val libraryTabRequest by sharedViewModel.libraryTabRequest.collectAsStateWithLifecycle()
     LaunchedEffect(libraryTabRequest) {
         libraryTabRequest?.let {
