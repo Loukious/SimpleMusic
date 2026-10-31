@@ -119,7 +119,7 @@ class PromoSelectionTest {
     @Test
     fun `skips a banner whose link a tap could not open`() {
         val links =
-            listOf("http://x", "simpmusic//analytics", "ftp://x", "simpmusic://wrapped", "HTTPS://x", "simpmusic://analytics")
+            listOf("http://x", "simplemusic//analytics", "ftp://x", "simpmusic://wrapped", "HTTPS://x", "simpmusic://analytics")
         val promos = links.mapIndexed { i, link -> receipt.copy(id = "p$i", link = link) }
         assertEquals(listOf("HTTPS://x", "simpmusic://analytics"), eligible(promos = promos).map { it.first.link })
     }

@@ -252,12 +252,12 @@ fun App(
                 // https://simpmusic.org/app/watch?v=VIDEO_ID
                 // https://simpmusic.org/app/playlist?list=PLAYLIST_ID
                 // https://simpmusic.org/app/channel/CHANNEL_ID
-                // simpmusic://watch?v=VIDEO_ID  (host="watch", no path)
-                // simpmusic://playlist?list=PLAYLIST_ID
-                // simpmusic://channel/CHANNEL_ID
+                // simplemusic://watch?v=VIDEO_ID  (host="watch", no path)
+                // simplemusic://playlist?list=PLAYLIST_ID
+                // simplemusic://channel/CHANNEL_ID
                 val segments = data.pathSegments
                 // For simpmusic.org: segments = ["app", "watch"] → appPath = segments[1]
-                // For simpmusic://: host IS the appPath (e.g. host="watch"), segments = []
+                // For simplemusic://: host IS the appPath (e.g. host="watch"), segments = []
                 val appPath =
                     if (data.scheme == "simpmusic") {
                         data.host
@@ -293,7 +293,7 @@ fun App(
                     }
 
                     "channel", "c" -> {
-                        // simpmusic://channel/UCxxx → segments = ["UCxxx"]
+                        // simplemusic://channel/UCxxx → segments = ["UCxxx"]
                         // simpmusic.org/app/channel/UCxxx → segments = ["app", "channel", "UCxxx"]
                         val artistId =
                             if (data.scheme == "simpmusic") {
@@ -316,14 +316,14 @@ fun App(
                         }
                     }
 
-                    // simpmusic://library                     → the Library tab
-                    // simpmusic://library?type=favorite       → one of its collections
+                    // simplemusic://library                     → the Library tab
+                    // simplemusic://library?type=favorite       → one of its collections
                     // Added for the Playlists widget, whose shortcuts have to reach these
                     // screens from the home screen without the app already running.
                     "library" -> {
                         val type = data.getQueryParameter("type")
                         if (type.isNullOrBlank()) {
-                            // simpmusic://library?tab=wrapped → the Library tab on one of its chips,
+                            // simplemusic://library?tab=wrapped → the Library tab on one of its chips,
                             // named as LibraryChipType stores them (a launch banner points at Wrapped).
                             val tab = libraryTabOf(data)
                             if (!isAppLinkAvailable(appPath, tab, localTrackingOn, youTubeLoggedIn)) {
@@ -337,7 +337,7 @@ fun App(
                         }
                     }
 
-                    // simpmusic://analytics — added for the launch banners.
+                    // simplemusic://analytics — added for the launch banners.
                     "analytics" -> {
                         if (isAppLinkAvailable(appPath, null, localTrackingOn, youTubeLoggedIn)) {
                             navController.navigate(AnalyticsDestination)
@@ -346,7 +346,7 @@ fun App(
                         }
                     }
 
-                    // simpmusic://taste — the AI taste card, which sits on Your library. A link of its
+                    // simplemusic://taste — the AI taste card, which sits on Your library. A link of its
                     // own rather than library?tab=your_library, so it can say that the card exists only
                     // while local tracking is on.
                     "taste" -> {
@@ -900,9 +900,12 @@ fun App(
                         confirmButton = {
                             TextButton(
                                 onClick = {
+                                    val url =
+                                        response.downloadUrl
+                                            ?: "https://github.com/Loukious/SimpleMusic/releases/latest"
                                     shouldShowUpdateDialog = false
                                     viewModel.showedUpdateDialog = false
-                                    openUrl("https://simpmusic.org/download")
+                                    openUrl(url)
                                 },
                             ) {
                                 Text(

@@ -2,6 +2,6 @@
 - New AppImage package for Linux desktop app
 - Local tracking listening history and analytics
 - Auto backup (Android only)
-- Vote for SimpMusic Lyrics
+- Vote for SimpleMusic Lyrics
 - Fix download playlist
 - Fix Spotify Canvas

@@ -1,4 +1,4 @@
-# Contributing to SimpMusic
+# Contributing to SimpleMusic
 
 Thanks for wanting to help! The short version:
 
@@ -11,7 +11,7 @@ Thanks for wanting to help! The short version:
    Clean Architecture layer rules — match what the neighbouring files already do.
 4. **Fill in the PR template.** All of it, including the checkboxes — one of them is
    machine-checked.
-5. **Translations** go through [Crowdin](https://crowdin.com/project/simpmusic), not PRs
+5. **Translations** go through [Crowdin](https://crowdin.com/project/simplemusic), not PRs
    that edit the string files directly.
 
 ## AI policy
