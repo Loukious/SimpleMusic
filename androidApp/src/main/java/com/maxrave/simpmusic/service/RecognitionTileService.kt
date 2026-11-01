@@ -10,7 +10,7 @@ import com.maxrave.simpmusic.MainActivity
 
 /**
  * Quick Settings tile for song recognition, a shortcut into the app: it opens
- * simpmusic://recognize, which shows Search with the recognition sheet listening. The sheet does
+ * simplemusic://recognize, which shows Search with the recognition sheet listening. The sheet does
  * the recording and asks for the microphone itself.
  */
 class RecognitionTileService : TileService() {

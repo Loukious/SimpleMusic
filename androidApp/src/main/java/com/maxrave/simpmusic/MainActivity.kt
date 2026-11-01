@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.getLocation()
 
-        if (!BuildConfig.DEBUG) viewModel.checkOfficialBuild(packageName, signingCertSha256())
+        // Fork releases are independently signed; upstream F-Droid keys must not gate their UI.
         setContent {
             App(viewModel)
         }

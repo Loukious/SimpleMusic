@@ -9,7 +9,7 @@ BUILD_VARIANT="full"
 # --vivo builds vivoAndroidApp: the same app under a package vivo's Origin Island follows
 MODULE="androidApp"
 NAME_SUFFIX=""
-KEYSTORE_PATH="./simpmusic.jks"
+KEYSTORE_PATH="./simplemusic.jks"
 # Read passwords from environment variables or use default (for backward compatibility)
 KEYSTORE_PASSWORD="${KEYSTORE_PASSWORD}"
 KEY_ALIAS="${KEY_ALIAS}"
@@ -108,7 +108,7 @@ for APK_PATH in $APK_PATHS; do
   RELEASE_NAME=$(basename "${APK_PATH/-unsigned/}")
   RELEASE_NAME="${RELEASE_NAME/app-/}"
   RELEASE_NAME="${RELEASE_NAME/$MODULE-/}"
-  SIGNED_APK_PATH="$SIGNED_APK_OUTPUT_DIR/SimpMusic-$BUILD_VARIANT$NAME_SUFFIX-$(basename "$RELEASE_NAME")"
+  SIGNED_APK_PATH="$SIGNED_APK_OUTPUT_DIR/SimpleMusic-$BUILD_VARIANT$NAME_SUFFIX-$(basename "$RELEASE_NAME")"
 
   echo "[Step 4] Aligning the APK: $APK_PATH..."
   if [ ! -f "$ZIPALIGN" ]; then
