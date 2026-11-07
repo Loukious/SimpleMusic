@@ -64,8 +64,8 @@ private val CONTENT_MAX_WIDTH = 420.dp
 
 /**
  * Discord login for Full builds, laid out like [LastfmLoginScreen]: no WebView and no token, the
- * user approves SimpMusic on Discord's own page in their browser, and the redirect brings them back
- * through `simpmusic://discord-auth`, which SharedViewModel completes.
+ * user approves SimpleMusic on Discord's own page in their browser, and the redirect brings them back
+ * through `simplemusic://discord-auth`, which SharedViewModel completes.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
