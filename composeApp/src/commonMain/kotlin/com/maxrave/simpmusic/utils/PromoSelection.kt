@@ -93,7 +93,7 @@ fun decodeLyricsPromos(json: String?): List<LyricsPromo> {
  * build can fully honour, by a banner's rules, that the user has not closed or tapped in this app
  * version ([shown] holds those ids). Null when there is none.
  *
- * Its link must be an `https://` page. A `simpmusic://` link would open its screen behind the player
+ * Its link must be an `https://` page. A `simplemusic://` link would open its screen behind the player
  * and the fullscreen lyrics page, which the deep-link router does not close.
  */
 fun lyricsPromo(

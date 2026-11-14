@@ -1,0 +1,178 @@
+name: Fork release — build FOSS APK
+
+# Builds the FOSS variant (no Sentry / Last.fm / Cast — no upstream secrets
+# needed) and publishes it as a GitHub Release tagged v<version-name>.
+#
+# The in-app update checker queries this release:
+#   api.github.com/repos/Loukious/SimpleMusic/releases/latest
+# and the update dialog's Download button opens the release's .apk asset
+# directly (UpdateData.downloadUrl).
+#
+# Signing: only the existing stable fork certificate is allowed. Never
+# generate a throwaway key: it makes upgrades impossible. The SHA-256 pin
+# below is the certificate shipped with v2.1.0 and v2.3.0.
+# Release uploads always use the signed UNIVERSAL APK, not the first find result.
+
+on:
+  # Manual runs, pushes to dev made with real user credentials, and — most
+  # importantly — workflow_call from fork-sync.yml: a GITHUB_TOKEN push does
+  # NOT trigger on:push workflows (GitHub's recursion guard) and GITHUB_TOKEN
+  # cannot dispatch workflow_dispatch events (403 "Resource not accessible by
+  # integration"), so the sync calls this workflow as a reusable job instead.
+  # The already-released check makes re-runs no-ops.
+  workflow_dispatch:
+    inputs:
+      repair_existing_release:
+        description: "Rebuild and replace the current version's broken release APK"
+        type: boolean
+        required: false
+        default: false
+  workflow_call:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + publish FOSS APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout fork dev
+        uses: actions/checkout@v6
+        with:
+          ref: dev
+          # core is vendored into the tree — no submodules to fetch
+
+      - name: Read version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(grep '^version-name' gradle/libs.versions.toml | head -1 | cut -d'"' -f2)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Releasing version: v$VERSION"
+
+      - name: Skip if this tag is already released
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release v${VERSION} already exists — nothing to do."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up JDK 21
+        if: steps.check.outputs.exists != 'true' || inputs.repair_existing_release == true
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: microsoft
+          cache: gradle
+
+      - name: Restore stable signing keystore
+        if: steps.check.outputs.exists != 'true' || inputs.repair_existing_release == true
+        env:
+          BASE_64_SIGNING_KEY: ${{ secrets.BASE_64_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$BASE_64_SIGNING_KEY" ]; then
+            echo "::error::BASE_64_SIGNING_KEY missing: refusing a temporary signature."
+            exit 1
+          fi
+          printf '%s' "$BASE_64_SIGNING_KEY" | base64 -d > simplemusic.jks
+          test -s simplemusic.jks
+          chmod 600 simplemusic.jks
+
+      - name: Verify fork signing certificate
+        if: steps.check.outputs.exists != 'true' || inputs.repair_existing_release == true
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
+        run: |
+          set -euo pipefail
+          if [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ]; then
+            echo "::error::Missing signing password or key alias."
+            exit 1
+          fi
+          EXPECTED_SHA256="3f6d5b9742bc2510c1f7a1f2cf55fcefab57219c4e778e2b4ce129b8b0ce476a"
+          ACTUAL_SHA256="$(keytool -exportcert -keystore simplemusic.jks \
+            -alias "$KEY_ALIAS" -storepass:env KEYSTORE_PASSWORD | sha256sum | cut -d' ' -f1)"
+          if [ "$ACTUAL_SHA256" != "$EXPECTED_SHA256" ]; then
+            echo "::error::Keystore does not match the established SimpleMusic release certificate."
+            exit 1
+          fi
+          echo "Stable fork signing certificate verified."
+
+      - name: Build FOSS release APK
+        if: steps.check.outputs.exists != 'true' || inputs.repair_existing_release == true
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          echo "" >> ./gradle.properties
+          echo "isFullBuild=false" >> ./gradle.properties
+          ./build_and_sign_apk.sh --release --foss
+
+      - name: Create or repair release and upload verified universal APK
+        if: steps.check.outputs.exists != 'true' || inputs.repair_existing_release == true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          # Explicitly select the signed universal APK. The old 'find | head -1'
+          # published x86_64-only v2.3.0, which most phones cannot install.
+          APK="androidApp/build/outputs/apk/release/SimpleMusic-foss-universal-release.apk"
+          if [ ! -s "$APK" ]; then
+            echo "::error::Signed universal APK missing."
+            exit 1
+          fi
+          APKSIGNER="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)/apksigner"
+          "$APKSIGNER" verify --verbose "$APK"
+          # APK integrity is checked above; the keystore certificate was pinned before the build.
+          # Do not scrape apksigner's human-readable certificate output here.
+          python3 - "$APK" <<'PYVERIFY'
+          import sys
+          import zipfile
+          with zipfile.ZipFile(sys.argv[1]) as z:
+              abis = {n.split('/')[1] for n in z.namelist() if n.startswith('lib/') and len(n.split('/')) > 2}
+          required = {'arm64-v8a', 'armeabi-v7a', 'x86_64'}
+          if not required.issubset(abis):
+              raise SystemExit(f'Universal APK is missing native architectures: {sorted(required - abis)}')
+          print('Verified universal APK contains all required ABIs.')
+          PYVERIFY
+          ASSET="SimpleMusic-foss-v${VERSION}.apk"
+          cp "$APK" "$ASSET"
+          # Target the checked-out dev HEAD, not GITHUB_SHA: when called as a
+          # reusable workflow by fork-sync, GITHUB_SHA is the commit the sync
+          # run started from — the tree it just force-pushed past.
+          TARGET=$(git rev-parse HEAD)
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            if [ "${{ inputs.repair_existing_release }}" != 'true' ]; then
+              echo "::error::Refusing to replace an existing release without manual repair authorization."
+              exit 1
+            fi
+            gh release upload "v${VERSION}" "$ASSET" --clobber
+            echo "Repaired existing v${VERSION} release with signed universal APK."
+          else
+            gh release create "v${VERSION}" \
+              --target "$TARGET" \
+              --title "SimpleMusic v${VERSION}" \
+              --latest \
+              --notes "FOSS build of the SimpleMusic fork, rebuilt from [Loukious/SimpleMusic](https://github.com/Loukious/SimpleMusic) \`dev\`.
+
+          The in-app update checker picks this release up automatically: the Download button in the update dialog opens the APK asset directly." \
+              "$ASSET"
+            echo "Released v${VERSION} with signed universal APK $ASSET"
+          fi

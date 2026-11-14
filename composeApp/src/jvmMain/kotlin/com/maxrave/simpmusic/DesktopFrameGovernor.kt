@@ -26,7 +26,7 @@ import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.nanoseconds
 
 /**
- * Decides how often SimpMusic's Desktop windows may draw, for every window at once.
+ * Decides how often SimpleMusic's Desktop windows may draw, for every window at once.
  *
  * Vsync caps every frame at the display's refresh rate (it is on everywhere, see runDesktopApp). What
  * it cannot do is stop drawing out of sight: skiko only stops drawing a window that is hidden, and a
@@ -36,7 +36,7 @@ import kotlin.time.Duration.Companion.nanoseconds
  *
  * Compose asks the [InfiniteAnimationPolicy] in the coroutine context before every frame of an
  * animation that never ends, and every window inherits its context from [governedApplication]:
- *  - a SimpMusic window has focus → as fast as vsync lets them;
+ *  - a SimpleMusic window has focus → as fast as vsync lets them;
  *  - windows on screen, none focused → [UNFOCUSED_FPS];
  *  - every window minimized or hidden, or the app hidden (⌘H) → those animations wait, and
  *    [AppOnScreen] tells the player to drop its position ticks to one a second and stop decoding video.
@@ -125,7 +125,7 @@ object DesktopFrameGovernor : InfiniteAnimationPolicy {
         AppOnScreen.set(next != Mode.OffScreen)
 
         // Skiko stops drawing a window only once its layer is not showing, and AWT counts a minimized
-        // frame as showing, so a minimized SimpMusic went on drawing at full speed (~300 fps measured
+        // frame as showing, so a minimized SimpleMusic went on drawing at full speed (~300 fps measured
         // on Linux). Hiding the content while minimized makes skiko skip every frame, whoever asks.
         for (window in Window.getWindows()) {
             if (window !is ComposeWindow) continue

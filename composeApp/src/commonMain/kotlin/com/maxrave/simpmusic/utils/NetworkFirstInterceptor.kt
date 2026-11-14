@@ -239,6 +239,6 @@ class NetworkFirstInterceptor(
     }
 
     private companion object {
-        const val CACHED_AT_KEY = "simpmusic#image_response_millis"
+        const val CACHED_AT_KEY = "simplemusic#image_response_millis"
     }
 }

@@ -172,7 +172,7 @@ fun CreditScreen(
             // GitHub button
             TextButton(
                 onClick = {
-                    openUrl("https://github.com/maxrave-dev/SimpMusic")
+                    openUrl("https://github.com/Loukious/SimpleMusic")
                 },
                 modifier =
                     Modifier
@@ -186,7 +186,7 @@ fun CreditScreen(
             // Issue tracker button
             TextButton(
                 onClick = {
-                    openUrl("https://github.com/maxrave-dev/SimpMusic/issues")
+                    openUrl("https://github.com/Loukious/SimpleMusic/issues")
                 },
                 modifier =
                     Modifier

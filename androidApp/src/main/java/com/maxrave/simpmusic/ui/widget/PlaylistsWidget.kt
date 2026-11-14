@@ -102,7 +102,7 @@ private const val TILE_DECODE_PX = 256
  * glance where a generic icon plus a label has to be read — and those labels were what made the
  * first version cramped, since every tile had to be wide enough to fit its text.
  *
- * Tiles open `simpmusic://…` rather than passing extras: a widget tap often arrives with the app
+ * Tiles open `simplemusic://…` rather than passing extras: a widget tap often arrives with the app
  * not running, and a deep link is handled the same on a cold start as on a warm one.
  */
 class PlaylistsWidget :
