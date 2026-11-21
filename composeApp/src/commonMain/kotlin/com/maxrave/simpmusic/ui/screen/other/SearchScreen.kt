@@ -286,7 +286,7 @@ fun SearchScreen(
     var showSelectionSheet by rememberSaveable { mutableStateOf(false) }
     var showSelectionAddToPlaylist by rememberSaveable { mutableStateOf(false) }
     var showRecognition by rememberSaveable { mutableStateOf(false) }
-    // The sheet asked for by simpmusic://recognize (the Quick Settings tile), opened once and cleared.
+    // The sheet asked for by simplemusic://recognize (the Quick Settings tile), opened once and cleared.
     val songRecognitionRequest by sharedViewModel.songRecognitionRequest.collectAsStateWithLifecycle()
     LaunchedEffect(songRecognitionRequest) {
         if (songRecognitionRequest) {
