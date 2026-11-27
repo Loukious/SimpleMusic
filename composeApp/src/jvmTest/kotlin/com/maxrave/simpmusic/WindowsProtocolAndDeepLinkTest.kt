@@ -30,10 +30,10 @@ class WindowsProtocolAndDeepLinkTest {
     fun msixWindowsAppsPathSkipsRegistrationAndFlagsStaleHkcuForCleanup() {
         val msixPaths =
             listOf(
-                """C:\Program Files\WindowsApps\com.maxrave.simpmusic_2.6.0.0_x64__abc123\SimpMusic.exe""",
-                """C:\Program Files\WindowsApps\com.maxrave.simpmusic_2.6.0.0_x64__abc123\simpmusic.exe""",
-                "C:/Program Files/WindowsApps/com.maxrave.simpmusic_2.6.0.0_x64__abc123/SimpMusic.exe",
-                "\"C:/Program Files/WindowsApps/com.maxrave.simpmusic_2.6.0.0_x64__abc123/simpmusic.exe\"",
+                """C:\Program Files\WindowsApps\com.maxrave.simpmusic_2.6.0.0_x64__abc123\SimpleMusic.exe""",
+                """C:\Program Files\WindowsApps\com.maxrave.simpmusic_2.6.0.0_x64__abc123\simplemusic.exe""",
+                "C:/Program Files/WindowsApps/com.maxrave.simpmusic_2.6.0.0_x64__abc123/SimpleMusic.exe",
+                "\"C:/Program Files/WindowsApps/com.maxrave.simpmusic_2.6.0.0_x64__abc123/simplemusic.exe\"",
             )
 
         msixPaths.forEach { path ->
@@ -54,7 +54,7 @@ class WindowsProtocolAndDeepLinkTest {
 
     @Test
     fun devBuildAndJavaExeSkipRegistration() {
-        val standaloneExe = """C:\Users\Alice\AppData\Local\Programs\SimpMusic\SimpMusic.exe"""
+        val standaloneExe = """C:\Users\Alice\AppData\Local\Programs\SimpleMusic\SimpleMusic.exe"""
         assertEquals(
             ProtocolRegistrationDecision.SKIP_DEV_OR_JAVA,
             WindowsProtocolRegistrar.decideRegistration(standaloneExe, isDevBuild = true),
@@ -85,8 +85,8 @@ class WindowsProtocolAndDeepLinkTest {
     fun standaloneInstallerPathRegistersNormally() {
         val standalonePaths =
             listOf(
-                """C:\Users\Alice\AppData\Local\Programs\SimpMusic\SimpMusic.exe""",
-                """C:\Users\Alice\AppData\Local\Programs\SimpMusic\simpmusic.exe""",
+                """C:\Users\Alice\AppData\Local\Programs\SimpleMusic\SimpleMusic.exe""",
+                """C:\Users\Alice\AppData\Local\Programs\SimpleMusic\simplemusic.exe""",
             )
 
         standalonePaths.forEach { path ->
@@ -104,8 +104,8 @@ class WindowsProtocolAndDeepLinkTest {
 
     @Test
     fun restoreRequestCarriesDiscordAndLastfmCallbacks() {
-        val dir = createTempDirectory("simpmusic-deeplink-test").toFile().also { tempDir = it }
-        val restoreRequest = File(dir, "simpmusic.restore_request").toPath()
+        val dir = createTempDirectory("simplemusic-deeplink-test").toFile().also { tempDir = it }
+        val restoreRequest = File(dir, "simplemusic.restore_request").toPath()
 
         val delivered = mutableListOf<GenericIntent>()
         DesktopDeepLinkHandler.listener = { intent -> delivered.add(intent) }
