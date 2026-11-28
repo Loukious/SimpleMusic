@@ -1564,7 +1564,7 @@ fun NowPlayingBottomSheet(
         var selected by remember {
             mutableIntStateOf(
                 when (uiState.mainLyricsProvider) {
-                    DataStoreManager.SIMPMUSIC -> 0
+                    DataStoreManager.SIMPLEMUSIC -> 0
                     DataStoreManager.LRCLIB -> 1
                     DataStoreManager.YOUTUBE -> 2
                     DataStoreManager.BETTER_LYRICS -> 3
@@ -1641,11 +1641,11 @@ fun NowPlayingBottomSheet(
                             viewModel.onUIEvent(
                                 NowPlayingBottomSheetUIEvent.ChangeLyricsProvider(
                                     when (selected) {
-                                        0 -> DataStoreManager.SIMPMUSIC
+                                        0 -> DataStoreManager.SIMPLEMUSIC
                                         1 -> DataStoreManager.LRCLIB
                                         2 -> DataStoreManager.YOUTUBE
                                         3 -> DataStoreManager.BETTER_LYRICS
-                                        else -> DataStoreManager.SIMPMUSIC
+                                        else -> DataStoreManager.SIMPLEMUSIC
                                     },
                                 ),
                             )

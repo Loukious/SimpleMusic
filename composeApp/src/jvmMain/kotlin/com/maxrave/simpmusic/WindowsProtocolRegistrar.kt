@@ -14,8 +14,8 @@ internal enum class ProtocolRegistrationDecision {
  *
  * Registry structure:
  * ```
- * HKCU\Software\Classes\simpmusic
- *     (Default) = "URL:SimpMusic Protocol"
+ * HKCU\Software\Classes\simplemusic
+ *     (Default) = "URL:SimpleMusic Protocol"
  *     URL Protocol = ""
  *     \DefaultIcon
  *         (Default) = "\"<exe_path>\",0"
@@ -62,15 +62,15 @@ object WindowsProtocolRegistrar {
             }
 
             ProtocolRegistrationDecision.REGISTER -> {
-                register(SCHEME, "URL:SimpMusic Protocol", exePath)
-                register(LASTFM_SCHEME, "URL:SimpMusic Last.fm Callback", exePath)
+                register(SCHEME, "URL:SimpleMusic Protocol", exePath)
+                register(LASTFM_SCHEME, "URL:SimpleMusic Last.fm Callback", exePath)
             }
         }
     }
 
     internal fun decideRegistration(
         exePath: String,
-        isDevBuild: Boolean = System.getProperty("simpmusic.dev") == "true",
+        isDevBuild: Boolean = System.getProperty("simplemusic.dev") == "true",
     ): ProtocolRegistrationDecision {
         val normalized = exePath.trim().trim('"').replace('\\', '/').lowercase()
         if (normalized.contains("/windowsapps/")) {
@@ -148,7 +148,7 @@ object WindowsProtocolRegistrar {
     ): Boolean {
         return try {
             val result = regQuery("${regKeyOf(scheme)}\\shell\\open\\command", null)
-            // Registry stores path with quotes: "C:\path\to\SimpMusic.exe" "%1"
+            // Registry stores path with quotes: "C:\path\to\SimpleMusic.exe" "%1"
             // Normalize both for comparison
             val normalizedExe = currentExePath.replace("\\", "/").lowercase()
             result?.replace("\\", "/")?.lowercase()?.contains(normalizedExe) == true
@@ -160,8 +160,8 @@ object WindowsProtocolRegistrar {
     private fun resolveExePath(): String? {
         // JPackage directory structure:
         //   <app>/runtime/...  (java.home points here)
-        //   <app>/SimpMusic.exe
-        // So we go: java.home → parent (runtime) → parent (app) → SimpMusic.exe
+        //   <app>/SimpleMusic.exe
+        // So we go: java.home → parent (runtime) → parent (app) → SimpleMusic.exe
         val javaHome = System.getProperty("java.home") ?: return null
         val javaHomeDir = java.io.File(javaHome)
 
@@ -177,7 +177,7 @@ object WindowsProtocolRegistrar {
 
         if (appDir != null) {
             val exeFile =
-                listOf("SimpMusic.exe", "simpmusic.exe")
+                listOf("SimpleMusic.exe", "simplemusic.exe")
                     .map { java.io.File(appDir, it) }
                     .firstOrNull { it.exists() }
             if (exeFile != null) {

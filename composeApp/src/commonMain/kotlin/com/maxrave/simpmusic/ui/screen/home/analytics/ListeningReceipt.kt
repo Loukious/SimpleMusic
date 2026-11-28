@@ -276,7 +276,7 @@ private fun ListeningReceiptPaper(
                 .padding(start = 20.dp, top = 40.dp, end = 20.dp, bottom = 16.dp),
     ) {
         Text(
-            text = "SIMPMUSIC",
+            text = "SIMPLEMUSIC",
             modifier = Modifier.fillMaxWidth(),
             style =
                 TextStyle(
